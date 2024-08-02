@@ -24,6 +24,16 @@ public class User implements UserDetails {
     private String email;
     private String password;
 
+    private Double totalMoney = 0.0;
+
+    public Double getTotalMoney() {
+        return totalMoney;
+    }
+
+    public void setTotalMoney(Double totalMoney) {
+        this.totalMoney = totalMoney;
+    }
+
     @Enumerated(EnumType.STRING)
     private UserRole userRole;
 
