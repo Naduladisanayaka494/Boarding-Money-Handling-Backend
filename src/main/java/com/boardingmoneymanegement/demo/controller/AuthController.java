@@ -22,6 +22,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -67,5 +68,18 @@ public class AuthController {
         }
         return authenticationResponse;
 
+    }
+
+    @GetMapping("/users")
+    public ResponseEntity<List<User>> getAllUsers() {
+        List<User> users = authService.getAllUsers();
+        return new ResponseEntity<>(users, HttpStatus.OK);
+    }
+
+
+    @GetMapping("/students")
+    public ResponseEntity<List<UserDto>> getAllStudents() {
+        List<UserDto> students = authService.getAllStudents();
+        return new ResponseEntity<>(students, HttpStatus.OK);
     }
 }

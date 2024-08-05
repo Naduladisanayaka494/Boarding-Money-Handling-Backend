@@ -13,7 +13,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class MoneyService {
+public class MoneyService implements  moneyinter{
     private final MoneyRepository moneyRepository;
     private final UserRepostory userRepository;
 
