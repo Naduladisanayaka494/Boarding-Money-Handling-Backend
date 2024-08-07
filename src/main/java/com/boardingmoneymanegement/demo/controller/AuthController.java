@@ -77,9 +77,5 @@ public class AuthController {
     }
 
 
-    @GetMapping("/students")
-    public ResponseEntity<List<UserDto>> getAllStudents() {
-        List<UserDto> students = authService.getAllStudents();
-        return new ResponseEntity<>(students, HttpStatus.OK);
-    }
+
 }

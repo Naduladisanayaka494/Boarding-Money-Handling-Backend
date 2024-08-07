@@ -50,7 +50,14 @@ public class MoneyService implements  moneyinter{
         return moneyRepository.save(money);
     }
 
+    @Override
+    public List<Money> getAllTransactions() {  // Add this method
+        return moneyRepository.findAll();
+    }
+
     public List<Money> getMoneyTransactions(Long userId) {
         return moneyRepository.findByUserId(userId);
     }
+
+
 }
