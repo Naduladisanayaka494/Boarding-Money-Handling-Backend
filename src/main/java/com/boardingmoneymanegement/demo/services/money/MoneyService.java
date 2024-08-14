@@ -9,11 +9,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class MoneyService implements  moneyinter{
+public class MoneyService implements moneyinter {
     private final MoneyRepository moneyRepository;
     private final UserRepostory userRepository;
 
@@ -28,6 +29,7 @@ public class MoneyService implements  moneyinter{
         money.setAmount(amount);
         money.setTransactionType(TransactionType.ADD_MONEY);
         money.setDescription(description);
+        money.setTransactionDateTime(LocalDateTime.now());  // Set current date and time
         return moneyRepository.save(money);
     }
 
@@ -47,17 +49,53 @@ public class MoneyService implements  moneyinter{
         money.setAmount(amount);
         money.setTransactionType(TransactionType.SPEND_MONEY);
         money.setDescription(description);
+        money.setTransactionDateTime(LocalDateTime.now());  // Set current date and time
         return moneyRepository.save(money);
-    }
-
-    @Override
-    public List<Money> getAllTransactions() {  // Add this method
-        return moneyRepository.findAll();
     }
 
     public List<Money> getMoneyTransactions(Long userId) {
         return moneyRepository.findByUserId(userId);
     }
 
+    public List<Money> getAllTransactions() {  // Add this method
+        return moneyRepository.findAll();
+    }
+
+
+    @Transactional
+    public Money updateTransaction(Long transactionId, Long userId, Double amount, String description, TransactionType transactionType) {
+        Money transaction = moneyRepository.findById(transactionId)
+                .orElseThrow(() -> new RuntimeException("Transaction not found"));
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Revert the previous transaction amount from the user's total money
+        if (transaction.getTransactionType() == TransactionType.ADD_MONEY) {
+            user.setTotalMoney(user.getTotalMoney() - transaction.getAmount());
+        } else if (transaction.getTransactionType() == TransactionType.SPEND_MONEY) {
+            user.setTotalMoney(user.getTotalMoney() + transaction.getAmount());
+        }
+
+        // Update the transaction details
+        transaction.setUser(user);
+        transaction.setAmount(amount);
+        transaction.setDescription(description);
+        transaction.setTransactionType(transactionType);
+        transaction.setTransactionDateTime(LocalDateTime.now());
+
+        // Apply the new transaction amount to the user's total money
+        if (transactionType == TransactionType.ADD_MONEY) {
+            user.setTotalMoney(user.getTotalMoney() + amount);
+        } else if (transactionType == TransactionType.SPEND_MONEY) {
+            if (user.getTotalMoney() < amount) {
+                throw new RuntimeException("Insufficient funds");
+            }
+            user.setTotalMoney(user.getTotalMoney() - amount);
+        }
+
+        userRepository.save(user);  // Save the updated user
+        return moneyRepository.save(transaction);  // Save the updated transaction
+    }
 
 }

@@ -1,6 +1,7 @@
 package com.boardingmoneymanegement.demo.controller;
 
 import com.boardingmoneymanegement.demo.dto.MoneyRequest;
+import com.boardingmoneymanegement.demo.dto.MoneyUpdateRequest;
 import com.boardingmoneymanegement.demo.dto.UserDto;
 import com.boardingmoneymanegement.demo.entity.Money;
 import com.boardingmoneymanegement.demo.services.auth.AuthServiceImpl;
@@ -41,8 +42,25 @@ public class MoneyController {
         return new ResponseEntity<>(students, HttpStatus.OK);
     }
 
-    @GetMapping("/all-transactions")  // Add this endpoint
+    @GetMapping("/all-transactions")
     public List<Money> getAllTransactions() {
         return moneyService.getAllTransactions();
     }
+
+
+    @PutMapping("/update/{transactionId}")
+    public ResponseEntity<Money> updateTransaction(
+            @PathVariable Long transactionId,
+            @RequestBody MoneyUpdateRequest request) {
+
+        Money updatedTransaction = moneyService.updateTransaction(
+                transactionId,
+                request.getUserId(),
+                request.getAmount(),
+                request.getDescription(),
+                request.getTransactionType());
+
+        return new ResponseEntity<>(updatedTransaction, HttpStatus.OK);
+    }
+
 }
