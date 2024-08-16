@@ -26,6 +26,13 @@ public class MoneyController {
         return moneyService.addMoney(request.getUserId(), request.getAmount(), request.getDescription());
     }
 
+    @GetMapping("/transaction/{transactionId}")
+    public ResponseEntity<Money> getTransactionById(@PathVariable Long transactionId) {
+        return moneyService.getTransactionById(transactionId)
+                .map(transaction -> new ResponseEntity<>(transaction, HttpStatus.OK))
+                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
     @PostMapping("/spend")
     public Money spendMoney(@RequestBody MoneyRequest request) {
         return moneyService.spendMoney(request.getUserId(), request.getAmount(), request.getDescription());

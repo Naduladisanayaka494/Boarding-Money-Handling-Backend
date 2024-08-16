@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -97,5 +98,10 @@ public class MoneyService implements moneyinter {
         userRepository.save(user);  // Save the updated user
         return moneyRepository.save(transaction);  // Save the updated transaction
     }
+
+    public Optional<Money> getTransactionById(Long transactionId) {
+        return moneyRepository.findById(transactionId);
+    }
+
 
 }
