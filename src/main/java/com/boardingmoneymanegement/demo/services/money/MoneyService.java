@@ -103,5 +103,23 @@ public class MoneyService implements moneyinter {
         return moneyRepository.findById(transactionId);
     }
 
+    @Transactional
+    public void deleteTransaction(Long transactionId) {
+        Money transaction = moneyRepository.findById(transactionId)
+                .orElseThrow(() -> new RuntimeException("Transaction not found"));
+
+        User user = transaction.getUser();
+
+        // Update the user's total money based on the transaction type
+        if (transaction.getTransactionType() == TransactionType.ADD_MONEY) {
+            user.setTotalMoney(user.getTotalMoney() - transaction.getAmount());
+        } else if (transaction.getTransactionType() == TransactionType.SPEND_MONEY) {
+            user.setTotalMoney(user.getTotalMoney() + transaction.getAmount());
+        }
+
+        userRepository.save(user);  // Save the updated user
+        moneyRepository.deleteById(transactionId);  // Delete the transaction
+    }
+
 
 }

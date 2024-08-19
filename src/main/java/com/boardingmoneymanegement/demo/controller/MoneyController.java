@@ -70,4 +70,14 @@ public class MoneyController {
         return new ResponseEntity<>(updatedTransaction, HttpStatus.OK);
     }
 
+    @DeleteMapping("/delete/{transactionId}")
+    public ResponseEntity<Void> deleteTransaction(@PathVariable Long transactionId) {
+        try {
+            moneyService.deleteTransaction(transactionId);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);  // 204 No Content
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);  // 404 Not Found
+        }
+    }
+
 }
